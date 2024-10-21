@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useFetchforCityMutation } from '@/redux/api/endpoints';
 import Link from 'next/link';
@@ -12,33 +12,29 @@ interface WeatherData {
   visibility: number;
   wind: {speed: number};
   sys: {sunrise: number; sunset:number};
-  // Add other relevant fields here
 }
 
-const CityInfoPage = () => {
+const CityInfoPageContent = () => {
   const searchParams = useSearchParams();
   const lat = searchParams.get('lat');
   const lon = searchParams.get('lon');
 
   const [fetchForCity] = useFetchforCityMutation();
   const [data, setData] = useState<WeatherData | null>(null);
-  const [loading, setLoading] = useState<boolean>(false); // Add loading state
-  const [error, setError] = useState<string | null>(null); // Optional error state
+  const [loading, setLoading] = useState<boolean>(false); 
+  const [error, setError] = useState<string | null>(null);
 
   const fetchWeatherData = async (lat: number, lon: number) => {
-    setLoading(true); // Start loading
-    setError(null); // Reset error
+    setLoading(true);
+    setError(null);
     try {
-      // Make your API call here using lat and lon
       const response = await fetchForCity({ lat, lon }).unwrap();
-      console.log(response.main);
-
-      setData(response); // Set the data once fetched
+      setData(response);
     } catch (error) {
       console.error('Error fetching weather data:', error);
-      setError('Failed to load weather data'); // Set error message
+      setError('Failed to load weather data');
     } finally {
-      setLoading(false); // End loading
+      setLoading(false);
     }
   };
 
@@ -48,17 +44,14 @@ const CityInfoPage = () => {
     }
   }, [lat, lon]);
 
-  // Loading message
   if (loading) {
     return <div className="text-white text-center mt-10">Loading city weather data...</div>;
   }
 
-  // Error message
   if (error) {
     return <div className="text-white text-center mt-10">{error}</div>;
   }
 
-  // If no data yet, return null (can also add a fallback message)
   if (!data) {
     return null;
   }
@@ -81,7 +74,7 @@ const CityInfoPage = () => {
 
   return (
     <div className='py-4'>
-    <Link href={'/'} className="text-[#ff8c56] bg-[#373a50] py-1 px-3 rounded mt-[20px]">Home</Link>
+      <Link href={'/'} className="text-[#ff8c56] bg-[#373a50] py-1 px-3 rounded mt-[20px]">Home</Link>
       <div className="text-white">
         <div className="flex justify-between items-center py-10 w-[70%] mx-auto">
           <div className="flex flex-col justify-center items-start gap-4">
@@ -143,6 +136,14 @@ const CityInfoPage = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+const CityInfoPage = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CityInfoPageContent />
+    </Suspense>
   );
 };
 
