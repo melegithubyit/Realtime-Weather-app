@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, JSX } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFetchforCityMutation } from '@/redux/api/endpoints';
 import HomeCard from '@/components/homecard';
 import map from '@/public/map3.jpg';
@@ -9,7 +9,7 @@ import Image from 'next/image';
 interface WeatherData {
   city: string;
   temperature: number;
-  weather: { icon: string; description: string }[];
+  weather: { icon: string; description: string }[]; // Added 'icon' property
   main: { temp: number; humidity: number };
   wind: { speed: number };
 }
@@ -40,7 +40,6 @@ const cityNames = Object.keys(cities);
 
 export default function Home() {
   const [weatherData, setWeatherData] = useState<WeatherData[]>([]);
-
   const [fetchForCity] = useFetchforCityMutation();
 
   const getRandomCitiesWeather = async () => {
@@ -57,7 +56,7 @@ export default function Home() {
 
   useEffect(() => {
     getRandomCitiesWeather();
-  }, [getRandomCitiesWeather]);
+  }, []);
 
   return (
     <div className="text-white space-y-3">
@@ -68,7 +67,7 @@ export default function Home() {
             <p className="text-center">Loading weather data...</p>
           ) : (
             <div className="flex gap-3">
-              {weatherData.map((data: WeatherData, index: number) => (
+              {weatherData.map((data, index) => (
                 <div key={index}>
                   <HomeCard data={data} />
                 </div>

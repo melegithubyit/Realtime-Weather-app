@@ -1,12 +1,19 @@
-'use client';
-
 import React, { useEffect, useRef, useState } from 'react';
 import { useFetchLatestNewsQuery } from '@/redux/api/endpoints';
 import NewsCard from './newscard';
 
-const NewsSection = () => {
+// Define the Article interface
+interface Article {
+  publishedAt: string;
+  title: string;
+  description: string;
+  urlToImage: string;
+  url: string;
+}
+
+const NewsSection: React.FC = () => {
   const { data, isLoading } = useFetchLatestNewsQuery({});
-  const scrollRef = useRef(null);
+  const scrollRef = useRef<HTMLDivElement>(null); // Explicitly typed as HTMLDivElement
   const [isPaused, setIsPaused] = useState(false);
 
   // Auto-scroll logic
@@ -40,7 +47,7 @@ const NewsSection = () => {
       onMouseLeave={() => setIsPaused(false)} // Resume auto-scroll when not hovering
     >
       <div className="news-scroller pb-16">
-        {data?.articles.map((article, index) => (
+        {data?.articles.map((article: Article, index: number) => (
           <div className="news-card-container" key={index}>
             <NewsCard
               createdAt={article.publishedAt}
@@ -54,6 +61,6 @@ const NewsSection = () => {
       </div>
     </div>
   );
-};
+}
 
 export default NewsSection;
