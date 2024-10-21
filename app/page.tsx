@@ -1,101 +1,87 @@
-import Image from "next/image";
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { useFetchforCityMutation } from '@/redux/api/endpoints';
+import HomeCard from '@/components/homecard';
+import map from '@/public/map3.jpg';
+import Image from 'next/image';
+
+interface WeatherData {
+  city: string;
+  temperature: number;
+  weather: { description: string }[];
+  main: { temp: number; humidity: number };
+  wind: { speed: number };
+}
+
+type CitiesType = {
+  [key: string]: [number, number];
+};
+
+const cities: CitiesType = {
+  "Addis Ababa, Ethiopia": [9.0319, 38.7469],
+  "Nairobi, Kenya": [-1.286389, 36.817223],
+  "Kampala, Uganda": [0.3136, 32.5811],
+  "London, United Kingdom": [51.5074, -0.1278],
+  "New York, United States": [40.7128, -74.0060],
+  "Tokyo, Japan": [35.6895, 139.6917],
+  "Beijing, China": [39.9042, 116.4074],
+  "Moscow, Russia": [55.7558, 37.6176],
+  "Paris, France": [48.8566, 2.3522],
+  "Berlin, Germany": [52.5200, 13.4050],
+  "Cairo, Egypt": [30.0330, 31.2336],
+  "Lagos, Nigeria": [6.5244, 3.3792],
+  "Cape Town, South Africa": [-33.9249, 18.4241],
+  "Sydney, Australia": [-33.8688, 151.2093],
+  "Rio de Janeiro, Brazil": [-22.9068, -43.1729],
+};
+
+const cityNames = Object.keys(cities);
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [weatherData, setWeatherData] = useState<WeatherData[]>([]);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const [fetchForCity] = useFetchforCityMutation();
+
+  const getRandomCitiesWeather = async () => {
+    const shuffledCities = [...cityNames].sort(() => 0.5 - Math.random()).slice(0, 5);
+    const weatherPromises = shuffledCities.map(async (city) => {
+      const [lat, lon] = cities[city];
+      const response = await fetchForCity({ lat, lon }).unwrap();
+      return { city, ...response };
+    });
+
+    const weatherResults = await Promise.all(weatherPromises);
+    setWeatherData(weatherResults);
+  };
+
+  useEffect(() => {
+    getRandomCitiesWeather();
+  }, []);
+
+  return (
+    <div className="text-white space-y-3">
+      <h1 className="font-bold text-3xl py-3 text-center">Weather Information</h1>
+      <div className="grid grid-rows-12">
+        <div className="row-span-8 flex justify-center">
+          {weatherData.length === 0 ? (
+            <p className="text-center">Loading weather data...</p>
+          ) : (
+            <div className="flex gap-3">
+              {weatherData.map((data, index) => (
+                <div key={index}>
+                  <HomeCard data={data} />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        <div className="row-span-4 h-[170px]">
+          <div className="w-full md:w-[70%] mx-auto h-full">
+            <Image src={map} alt="map" layout="responsive" objectFit="contain" />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

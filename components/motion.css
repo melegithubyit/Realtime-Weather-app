@@ -1,0 +1,25 @@
+.news-scroller {
+    display: flex;
+    flex-direction: column;
+    animation: scroll-vertical 200s linear infinite;
+    overflow-y: auto; /* Allow manual scrolling */
+    scroll-behavior: smooth; /* Smooth scrolling effect for manual scrolling */
+  }
+  
+  .paused {
+    animation-play-state: paused; /* Pause auto-scrolling when hovered */
+  }
+  
+  .news-card-container {
+    margin-bottom: 20px; /* Space between cards */
+  }
+  
+  @keyframes scroll-vertical {
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(-100%);
+    }
+  }
+  
