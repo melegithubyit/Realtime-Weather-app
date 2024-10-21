@@ -26,7 +26,7 @@ Technologies Used
 To get a local copy of the project up and running, follow these steps:
 
 1. Clone the repository:
-    - git clone https://github.com/melegithubyit/Realtime-Weather-app.git
+    - git clone https://github.com/melegithubyit/Realtime-weather-app.git
 2. Navigate to the project directory:
 
 3. Install the necessary dependencies:
