@@ -5,7 +5,7 @@ import { useFetchLatestNewsQuery } from '@/redux/api/endpoints';
 import NewsCard from './newscard';
 
 const NewsSection = () => {
-  const { data, error, isLoading } = useFetchLatestNewsQuery({});
+  const { data, isLoading } = useFetchLatestNewsQuery({});
   const scrollRef = useRef(null);
   const [isPaused, setIsPaused] = useState(false);
 
